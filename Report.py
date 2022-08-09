@@ -3,17 +3,17 @@ from docx.shared import Mm, Pt
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.text import WD_LINE_SPACING
 from datetime import datetime, date, time
-import Google_docs
+# import Google_docs
 
 n = datetime.now()
 month_now = datetime.timetuple(n)[1] - 1
-# print(month_now)
+print(month_now)
 
 doc = docx.Document()
 # Стиль текста по умолчанию
-style = doc.styles['Normal']
-style.font.name = 'TimesNewRomanPSMT'
-style.font.size = Pt(11)
+style = doc.styles['Normal'] # Стиль для всего документа
+style.font.name = 'TimesNewRomanPSMT' # Шрифт для всего документа
+style.font.size = Pt(11) # Размер шрифта
 
 # Добавление дотабличного текста
 header = doc.add_paragraph('')
