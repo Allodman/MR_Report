@@ -7,42 +7,35 @@ gc = gspread.service_account(filename='C:\\Users\\anton.kudryashov\\Downloads\\i
 sh = gc.open("MR Group IT support")
 ws = sh.worksheet("Обращения в поддержку")
 
-#--------------------------------------
-
-# Вариант подходит только  если на 30 и 31 не выпадают выходные
-# review_start_date = f"01.{datetime.timetuple(datetime.now())[1] - 1:02}.2022"
-# review_end_date = f"{f'30.{datetime.timetuple(datetime.now())[1] - 1:02}.2022' if (ws.find(f'31.{datetime.timetuple(datetime.now())[1] - 1:02}.2022')) == None else f'31.{datetime.timetuple(datetime.now())[1] - 1:02}.2022' }"
-# print(review_start_date)
-# print(review_end_date)
-# print(ws.find('30.07.2022'))
-#
-# cell_review_start_date = f'{str(ws.find(review_start_date))[6:12]}'
-# cell_review_end_date = f'{str(ws.find(review_end_date))[6:11]}3'
-# print(str(cell_review_start_date))
-# print(str(cell_review_end_date))
-
-# Через регулярные выражение
-# print(r'\d\d' + f'{datetime.timetuple(datetime.now())[1]-1:02}.{datetime.timetuple(datetime.now())[0]}')
-# d = r'\d\d' + f'{datetime.timetuple(datetime.now())[1]-1:02}.{datetime.timetuple(datetime.now())[0]}'
-
-
-
-#--------------------------------------
-# a = sh.sheet1.get(f'{cell_review_start_date}:{cell_review_end_date}')
+# Область поиска необходимых дат начала и конца отчёта
 search_range = ws.get("A500:C5000")
+
+# Поиск даты начала отчёта
 for row in search_range:
     b = re.search(r'\d\d' + '.' + f'{datetime.timetuple(datetime.now())[1]-1:02}.{datetime.timetuple(datetime.now())[0]}', row[0])
     if b != None:
         review_start_date = str(b)[39:49] # Дата начала отчёта
         break
-cell_review_start_date = f'{str(ws.find(review_start_date))[6:12]}' # Ячейка начала отчёта
 
+# Поиск ячейки начала отчёта по дате
+cell_review_start_date = f'{str(ws.find(review_start_date))[6:12]}'
+
+# Поиск даты конца отчёта (Технически это первый день отчёта текущего месяца
 for row in search_range:
-    b = re.findall(r'\d\d' + '.' + f'{datetime.timetuple(datetime.now())[1]:02}.{datetime.timetuple(datetime.now())[0]}',row[0])
-    print(b)
+    c = re.search(r'\d\d' + '.' + f'{datetime.timetuple(datetime.now())[1]:02}.{datetime.timetuple(datetime.now())[0]}', row[0])
+    if c != None:
+        review_end_date = str(c)[39:49]
+        print(review_end_date)
+        break
 
+# Поиск ячейки конца отчёта по дате
+cell_review_end_date_incorrect = f'{str(ws.find(review_end_date))[6:12]}'
 
-# print(review_start_date)
-# print(cell_review_start_date)
-# a = '23/05/2022'
-# b = datetime.strptime(a, '%d.%m.%Y').date()
+# Путём тупых манипуляци изменяем ячейку первого дня текущего месяца на ячейку последнего дня предыдущего месяца
+correct_num = int(cell_review_end_date_incorrect[3]) - 1
+cell_review_end_date = str(cell_review_end_date_incorrect[:3] + str(correct_num) + cell_review_end_date_incorrect[4] + '3')
+
+# Проверка правильности парсинга
+last_month_review = ws.get(f'{cell_review_start_date}:{cell_review_end_date}')
+for row in last_month_review:
+    print(row)
