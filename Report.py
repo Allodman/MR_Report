@@ -1,13 +1,13 @@
 import docx
 from docx.shared import Mm, Pt
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.text import WD_LINE_SPACING
 from datetime import datetime, date, time
-# import Google_docs
+import Google_docs
 
-n = datetime.now()
-month_now = datetime.timetuple(n)[1] - 1
-print(month_now)
+report_month = datetime.timetuple(datetime.now())[1] - 1
+print(report_month)
 
 doc = docx.Document()
 # Стиль текста по умолчанию
@@ -49,9 +49,27 @@ par3.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 fmt3 = par3.paragraph_format
 fmt3.first_line_indent = Mm(12.7)
 
-table = doc.add_table(2, 3)
+review = Google_docs.last_month_review
+
+table = doc.add_table(len(review) + 1, 3) # (строка, колонка) | Создаём таблицу
+table.style = 'Table Grid' # Стиль таблицы (Шоб рамки были видны)
+cell = table.cell(0, 0).add_paragraph('')
+cell.add_run("Дата")
+cell.alignment = WD_ALIGN_PARAGRAPH.CENTER
+cell = table.cell(0, 1).add_paragraph('')
+cell.add_run("Описание услуги/инцидента")
+cell.alignment = WD_ALIGN_PARAGRAPH.CENTER
+cell = table.cell(0, 2).add_paragraph('')
+cell.add_run("Актуальный статус")
+cell.alignment = WD_ALIGN_PARAGRAPH.CENTER
+for row in range(len(review)):
+    for column in range(3):
+        cell = table.cell(row + 1, column).add_paragraph('')
+        cell.add_run(review[row][column])
+        cell.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
 
 
 
 # Сохранение документа
-doc.save('C:\\Users\\anton.kudryashov\\Documents\\Акт сдачи-приемки оказанных услуг (Тех поддержка) Test.docx')
+doc.save(f'C:\\Users\\anton.kudryashov\\Documents\\Акт сдачи-приемки оказанных услуг (Тех поддержка) 0{report_month}.22.docx')

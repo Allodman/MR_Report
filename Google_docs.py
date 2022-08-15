@@ -1,7 +1,7 @@
 import gspread
 import re
 from datetime import datetime, date, time
-# Указываем путь к JSON
+# Указываем путь к JSON (Это даёт доступ к документам аккаунта)
 gc = gspread.service_account(filename='C:\\Users\\anton.kudryashov\\Downloads\\it-supprot-report-e01c2b540894.json')
 # Открываем тестовую таблицу
 sh = gc.open("MR Group IT support")
@@ -25,7 +25,6 @@ for row in search_range:
     c = re.search(r'\d\d' + '.' + f'{datetime.timetuple(datetime.now())[1]:02}.{datetime.timetuple(datetime.now())[0]}', row[0])
     if c != None:
         review_end_date = str(c)[39:49]
-        print(review_end_date)
         break
 
 # Поиск ячейки конца отчёта по дате
@@ -37,5 +36,4 @@ cell_review_end_date = str(cell_review_end_date_incorrect[:3] + str(correct_num)
 
 # Проверка правильности парсинга
 last_month_review = ws.get(f'{cell_review_start_date}:{cell_review_end_date}')
-for row in last_month_review:
-    print(row)
+print(last_month_review[0][2]) # Первый аргумент - строка, второй - колонка
