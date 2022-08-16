@@ -36,4 +36,3 @@ cell_review_end_date = str(cell_review_end_date_incorrect[:3] + str(correct_num)
 
 # Проверка правильности парсинга
 last_month_review = ws.get(f'{cell_review_start_date}:{cell_review_end_date}')
-print(last_month_review[0][2]) # Первый аргумент - строка, второй - колонка
